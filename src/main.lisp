@@ -1,7 +1,10 @@
-((defpackage wordscape
+(defpackage wordscape
   (:use :cl))
 
 (in-package :wordscape)
+
+;; dictionary file containing list of valid Wordscapes words
+(defconstant +dictpath+ #P"/usr/share/dict/words")
 
 ;; from Norvig: Paradigms of Artificial Intelligence Programming
 (defun permutations (lst)
@@ -69,7 +72,7 @@
 (defun ws (s)
   "generate sorted list of dictionary words from permutations of string s having minimum length 3"
   (let* ((game (make-game s))
-	 (dict (build-dict #P"/usr/share/dict/words"))
+	 (dict (build-dict +dictpath+))
 	 (l nil))
     (dotimes (i (- (length s) 2))
       (setf l (append l (get-words-of-length game dict (+ i 3)))))
