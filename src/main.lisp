@@ -6,6 +6,19 @@
 ;; dictionary file containing list of valid Wordscapes words
 (defconstant +dictpath+ #P"/usr/share/dict/words")
 
+(defun build-dict (fn)
+  "return hash table of contents of dictionary file fn"
+  (let ((h (make-hash-table :test #'equal)))
+    (with-open-file (stream fn)
+      (loop for line = (read-line stream nil)
+	    while line
+		do  (setf (gethash (string-downcase line) h) nil)))
+    h))
+
+;; hash table of words from +dictpath+ file
+(defparameter *dict* (build-dict +dictpath+))
+
+
 ;; from Norvig: Paradigms of Artificial Intelligence Programming
 (defun permutations (lst)
   "return all permutations of lst"
@@ -39,15 +52,6 @@
      (mapcar #'list-to-string perms)
      :test #'equal)))
 
-(defun build-dict (fn)
-  "return hash table of contents of dictionary file fn"
-  (let ((h (make-hash-table :test #'equal)))
-    (with-open-file (stream fn)
-      (loop for line = (read-line stream nil)
-	    while line
-		do  (setf (gethash line h) nil)))
-    h))
-
 (defun get-substrings (lst n)
   "return list of strings of length n from lst"
   (remove-duplicates
@@ -71,11 +75,10 @@
 
 (defun ws (s)
   "generate sorted list of dictionary words from permutations of string s having minimum length 3"
-  (let* ((game (make-game s))
-	 (dict (build-dict +dictpath+))
-	 (l nil))
+  (let ((game (make-game s))
+	(l nil))
     (dotimes (i (- (length s) 2))
-      (setf l (append l (get-words-of-length game dict (+ i 3)))))
+      (setf l (append l (get-words-of-length game *dict* (+ i 3)))))
     (sort l #'string-lessp)))
 
 
