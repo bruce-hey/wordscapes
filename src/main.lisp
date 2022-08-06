@@ -80,5 +80,3 @@
     (dotimes (i (- (length s) 2))
       (setf l (append l (get-words-of-length game *dict* (+ i 3)))))
     (sort l #'string-lessp)))
-
-
